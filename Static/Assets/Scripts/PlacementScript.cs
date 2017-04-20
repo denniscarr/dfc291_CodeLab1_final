@@ -3,14 +3,14 @@ using System.Collections;
 
 public class PlacementScript : MonoBehaviour {
 
-	LevelGenScript lgn;
+	LevelGenerator lgn;
 	bool placed = false;
 
 	void Start ()
 	{
         placed = false;
 
-		lgn = GameObject.Find ("Game Manager").GetComponent<LevelGenScript> ();
+		lgn = GameObject.Find ("Game Manager").GetComponent<LevelGenerator> ();
 
 		Vector3 newPostion = transform.position;
 		Vector3 newScale = transform.localScale;
@@ -20,9 +20,9 @@ public class PlacementScript : MonoBehaviour {
 			if (gameObject.tag == "Obstacle")
             {	
 				// Get my size
-				newScale.x = Random.Range (lgn.obstacleMinSize, lgn.obstacleMaxSize);
+				newScale.x = Random.Range (lgn.obstacleSizeMin, lgn.obstacleSizeMax);
 				newScale.y = transform.localScale.y;
-				newScale.z = Random.Range (lgn.obstacleMinSize, lgn.obstacleMaxSize);
+				newScale.z = Random.Range (lgn.obstacleSizeMin, lgn.obstacleSizeMax);
 
 				// Get my position
 				newPostion.x = Random.Range (-lgn.levelSize + newScale.x / 2, lgn.levelSize - newScale.x / 2);

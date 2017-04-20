@@ -39,7 +39,7 @@ public class ScoreControllerScript : MonoBehaviour {
 	int numberOfObstaclesMin = 10;
 	int numberOfObstaclesMax = 50;
 	int currentEnemyAmt;
-    LevelGenScript levelGenerator;
+    LevelGenerator levelGenerator;
 
     // Used for high score list.
     public List<ScoreEntry> highScoreList;
@@ -79,7 +79,7 @@ public class ScoreControllerScript : MonoBehaviour {
 		multNumber.text = multiplier.ToString () + "X";
 
         floor = GameObject.Find("Floor").transform;
-        levelGenerator = GameObject.Find("Game Manager").GetComponent<LevelGenScript>();
+        levelGenerator = GameObject.Find("Game Manager").GetComponent<LevelGenerator>();
 
         // Load high scores.
         highScoreList = new List<ScoreEntry>();
@@ -157,9 +157,9 @@ public class ScoreControllerScript : MonoBehaviour {
 //		numberOfObstaclesMin *= levelNumber;
 //		numberOfObstaclesMax *= levelNumber;
 		score = Mathf.RoundToInt (score+1000*multiplier*levelNumber);
-		GameObject.Find ("Game Manager").GetComponent<LevelGenScript> ().numberOfEnemies = numberOfEnemies;
-		GameObject.Find ("Game Manager").GetComponent<LevelGenScript> ().numberOfObstacles = Random.Range(numberOfObstaclesMin, numberOfObstaclesMax);
-		GameObject.Find ("Game Manager").GetComponent<LevelGenScript> ().Invoke ("Generate", 1.4f);
+		levelGenerator.numberOfEnemies = numberOfEnemies;
+        levelGenerator.numberOfObstacles = Random.Range(numberOfObstaclesMin, numberOfObstaclesMax);
+        levelGenerator.Invoke ("Generate", 1.4f);
 		currentEnemyAmt = numberOfEnemies;
 	}
 
