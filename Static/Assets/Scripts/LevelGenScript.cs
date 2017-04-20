@@ -49,6 +49,6 @@ public class LevelGenScript : MonoBehaviour {
 
 		player.transform.position = new Vector3(player.transform.position.x, playerSpawnPoint.position.y, player.transform.position.z);
 		floor.GetComponent<MeshCollider> ().enabled = true;
-		GameObject.Find ("Game Manager").GetComponent<BatchBillboardScript> ().ReupdateBillboards ();
+		GameObject.Find ("Game Manager").GetComponent<BatchBillboard> ().UpdateBillboards ();
 	}
 }
