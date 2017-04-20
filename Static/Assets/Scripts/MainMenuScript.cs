@@ -9,7 +9,7 @@ public class MainMenuScript : MonoBehaviour {
         // Unpause everything and hide menu.
         foreach (GameObject enemy in GameObject.FindGameObjectsWithTag("Enemy"))
         {
-            enemy.GetComponent<EnemyScript>().enabled = true;
+            enemy.GetComponent<Enemy>().enabled = true;
         }
         GameObject.Find("FPSController").GetComponent<FirstPersonController>().enabled = true;
         GameObject.Find("Gun").GetComponent<GunScript>().enabled = true;

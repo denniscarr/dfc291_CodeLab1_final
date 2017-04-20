@@ -57,7 +57,7 @@ public class ScoreControllerScript : MonoBehaviour {
         // Pause everything for menu.
         foreach(GameObject enemy in GameObject.FindGameObjectsWithTag("Enemy"))
         {
-            enemy.GetComponent<EnemyScript>().enabled = false;
+            enemy.GetComponent<Enemy>().enabled = false;
         }
         GameObject.Find("FPSController").GetComponent<FirstPersonController>().enabled = false;
         GameObject.Find("Gun").GetComponent<GunScript>().enabled = false;

@@ -166,7 +166,7 @@ public class GunScript : MonoBehaviour {
 			if (hit.collider.tag == "Enemy")
             {
                 // Tell the enemy it was hurt.
-                hit.collider.GetComponent<EnemyScript>().GetHurt();
+                hit.collider.GetComponent<Enemy>().HP -= 1;
 
                 // Tell the score controller that the player hit an enemy with a bullet.
                 scoreControllerScript.BulletHit();
