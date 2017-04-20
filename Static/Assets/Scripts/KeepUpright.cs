@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class FindHelper : MonoBehaviour {
+public class KeepUpright : MonoBehaviour {
 
-	void Update () {
+	private void Update ()
+    {
         // Keep self upright
         transform.rotation = Quaternion.identity;
 	}
