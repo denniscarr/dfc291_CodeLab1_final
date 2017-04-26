@@ -4,15 +4,23 @@ using System.Collections;
 
 public class MenuScript : MonoBehaviour {
 
-	void Update() {
-		if(Input.GetKeyDown("escape")) {
+    //* THIS SCRIPT WILL EVENTUALLY CONTAIN CODE FOR A THEORETICAL PAUSE MENU - RIGHT NOW IT JUST RESETS THE SCENE WHEN THE PLAYER PRESSES ESCAPE *//
+
+	void Update()
+    {
+		if (Input.GetButtonDown("Cancel"))
+        {
 			MenuButton();
 		}
 	}
 
-	public void MenuButton() {
-		Cursor.lockState = CursorLockMode.None;
-		Cursor.visible = true;
-		SceneManager.LoadScene (0);
-	}
+	public void MenuButton()
+    {
+        // Reload the scene.
+		SceneManager.LoadScene ("mainScene");
+
+        // Unlock and show cursor.
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+    }
 }
