@@ -184,8 +184,6 @@ public class ScoreControllerScript : MonoBehaviour {
         for (int i = 0; i < 10; i++)
         {
             highScoreList.Add(new ScoreEntry("AAA", 0));
-
-            Debug.Log(highScoreList[i]);
         }
 
         // Load saved high scores from PlayerPrefs.

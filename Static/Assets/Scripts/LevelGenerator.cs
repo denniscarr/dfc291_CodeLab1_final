@@ -42,14 +42,13 @@ public class LevelGenerator : MonoBehaviour {
 			Destroy (go);
 		}
 			
-
 		// Put all things in the level.
 		for (int i = 0; i < numberOfObstacles; i++) {
-			Instantiate (obstaclePrefab);
+            PlaceObstacle();
 		}
 
 		for (int i = 0; i < numberOfEnemies; i++) {
-			Instantiate (enemyPrefab);
+            PlaceEnemy();
 		}
 
         // Place the player in the correct spot above the level.
@@ -61,4 +60,94 @@ public class LevelGenerator : MonoBehaviour {
         // Update billboards.
 		GameObject.Find ("Game Manager").GetComponent<BatchBillboard> ().UpdateBillboards ();
 	}
+
+
+    void PlaceObstacle()
+    {
+        Vector3 newPosition = Vector3.zero;
+        Vector3 newScale = Vector3.zero;
+
+        bool placed = false;
+        int loopSafeguard = 0;
+
+        while (!placed)
+        {
+            // Get size
+            newScale = new Vector3(
+                Random.Range(obstacleSizeMin, obstacleSizeMax),
+                20f,
+                Random.Range(obstacleSizeMin, obstacleSizeMax)
+            );
+
+            // Get my position
+            newPosition = new Vector3(
+                Random.Range(-levelSize + newScale.x / 2, levelSize - newScale.x / 2),
+                newScale.y*0.5f,
+                Random.Range(-levelSize + newScale.z / 2, levelSize - newScale.z / 2)
+            );
+
+            // Test this location with an overlap box that is high enough to catch the player in midair.
+            // Also make it a little bit larger than the actual obstacle.
+            Collider[] overlaps = Physics.OverlapBox(newPosition, new Vector3(newScale.x * 0.6f, 400, newScale.z * 0.6f));
+
+            // Make sure this obstacle isn't going to be placed on top of the player or an enemy.
+            placed = true;
+            foreach (Collider collider in overlaps)
+            {
+                if (collider.tag == "Player" || collider.tag == "Enemy")
+                {
+                    placed = false;
+                }
+            }
+
+            loopSafeguard++;
+            if (loopSafeguard > 100) return;
+        }
+
+        // Instantiate the obstacle.
+        GameObject newObstacle = Instantiate(obstaclePrefab);
+        newObstacle.transform.position = newPosition;
+        newObstacle.transform.localScale = newScale;
+    }
+
+
+    void PlaceEnemy()
+    {
+        GameObject newEnemy = Instantiate(enemyPrefab);
+        Vector3 newPosition = Vector3.zero;
+
+        bool placed = false;
+        int loopSafeguard = 0;
+
+        while (!placed)
+        {
+            // Get my position
+            newPosition = new Vector3(
+                Random.Range(-levelSize + newEnemy.GetComponent<Collider>().bounds.extents.x, levelSize - newEnemy.GetComponent<Collider>().bounds.extents.x),
+                2f,
+                Random.Range(-levelSize + newEnemy.GetComponent<Collider>().bounds.extents.z, levelSize - newEnemy.GetComponent<Collider>().bounds.extents.z)
+            );
+
+            // Test this location
+            placed = true;
+            Collider[] overlaps = Physics.OverlapSphere(newPosition, newEnemy.GetComponent<Collider>().bounds.extents.x * 1.5f);
+            foreach (Collider c in overlaps)
+            {
+                if (c.tag == "Player" || c.tag == "Enemy" || c.tag == "Obstacle" || c.tag == "Wall")
+                {
+                    Debug.Log("Tried to place enemy on " + c.tag);
+                    placed = false;
+                }
+            }
+
+            loopSafeguard++;
+            if (loopSafeguard > 100)
+            {
+                Debug.Log("Infinite Loop");
+                return;
+            }
+        }
+
+        newEnemy.transform.position = newPosition;
+    }
 }
