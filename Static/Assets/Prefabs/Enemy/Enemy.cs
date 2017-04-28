@@ -56,7 +56,7 @@ public class Enemy : MonoBehaviour {
     private BehaviorState currentState;
 
     // REFERENCES
-    ScoreControllerScript scoreControllerScript;
+    ScoreManager scoreManager;
 	Rigidbody myRigidbody;
 	Animator myAnimator;
     Transform playerTransform; 
@@ -67,7 +67,7 @@ public class Enemy : MonoBehaviour {
         // Store miscellaneous references.
 		playerTransform = GameObject.FindGameObjectWithTag ("Player").transform;
 		myRigidbody = GetComponent<Rigidbody> ();
-        scoreControllerScript = GameObject.Find("Score Display").GetComponent<ScoreControllerScript>();
+        scoreManager = GameObject.Find("Game Manager").GetComponent<ScoreManager>();
         myAnimator = GetComponent<Animator> ();
         myMaterial = GetComponentInChildren<MeshRenderer>().material;
 
@@ -215,7 +215,7 @@ public class Enemy : MonoBehaviour {
 		if (isAlive)
         {
 			Instantiate (deathParticles, transform.position, Quaternion.identity);
-            scoreControllerScript.KilledEnemy();
+            scoreManager.KilledEnemy();
 			isAlive = false;
             Destroy(gameObject);
         }

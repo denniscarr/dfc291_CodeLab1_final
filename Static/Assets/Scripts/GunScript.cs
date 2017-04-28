@@ -40,8 +40,8 @@ public class GunScript : MonoBehaviour {
 
 
     /* REFERENCES */
-    ScoreControllerScript scoreControllerScript;
-    Transform bulletSpawnTransform; // The point where bullets originate (ie the tip of the player's gun
+    ScoreManager scoreManager;
+    Transform bulletSpawnTransform; // The point where bullets originate (ie the tip of the player's gun)
     Transform gunTipTransform;
     Animator animator;
     Animator parentAnimator;
@@ -72,7 +72,7 @@ public class GunScript : MonoBehaviour {
         gunTipTransform = GameObject.Find("Tip").transform;
 
         // Get a reference to the score controller.
-        scoreControllerScript = FindObjectOfType<ScoreControllerScript>();
+        scoreManager = FindObjectOfType<ScoreManager>();
 
         animator = GetComponent<Animator>();
         parentAnimator = GetComponentInParent<Animator>();
@@ -169,7 +169,7 @@ public class GunScript : MonoBehaviour {
                 hit.collider.GetComponent<Enemy>().HP -= 1;
 
                 // Tell the score controller that the player hit an enemy with a bullet.
-                scoreControllerScript.BulletHit();
+                scoreManager.BulletHit();
 
                 // We only want to play the bullet strike sound once, not once for every bullet that hit an enemy. So set a bool which tells the sound to play
                 // later on.

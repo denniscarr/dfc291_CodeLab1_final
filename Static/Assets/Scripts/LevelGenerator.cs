@@ -5,9 +5,12 @@ public class LevelGenerator : MonoBehaviour {
 
     // LEVEL GEN VARIABLES
 	public float levelSize; // The size of the level (the level is always square so this is the width and height.)
-	public float numberOfEnemies;
-	public float numberOfObstacles;
-	public float obstacleSizeMin;
+	float numberOfEnemies;
+    [SerializeField] int enemiesAddedPerLevel = 7;
+	float numberOfObstacles;
+    [SerializeField] int numberOfObstaclesMin = 10;  // The minimum number of obstacles that can appear in a level.
+    [SerializeField] int numberOfObstaclesMax = 50;  // The maximum number of obstacles that can appear in a level.
+    public float obstacleSizeMin;
 	public float obstacleSizeMax;
 
     // MISC REFERENCES
@@ -29,8 +32,11 @@ public class LevelGenerator : MonoBehaviour {
 
 	public void Generate ()
 	{
-		// Clear level of all current obstacles and enemies.
-		GameObject[] stuffToDelete = GameObject.FindGameObjectsWithTag("Enemy");
+        numberOfEnemies = GameObject.Find("Game Manager").GetComponent<ScoreManager>().levelNumber * enemiesAddedPerLevel;
+        numberOfObstacles = Random.Range(numberOfObstaclesMin, numberOfObstaclesMax);
+
+        // Clear level of all current obstacles and enemies.
+        GameObject[] stuffToDelete = GameObject.FindGameObjectsWithTag("Enemy");
 		foreach (GameObject go in stuffToDelete)
         {
 			Destroy (go);

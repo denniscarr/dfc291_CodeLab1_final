@@ -7,7 +7,7 @@ public class GameOverScript : MonoBehaviour {
 
 	public GameObject gameOverScreen;
     public GameObject nameEntry;
-    ScoreControllerScript scoreController;
+    ScoreManager scoreManager;
 
 	GameObject player;
 	bool gameOver;
@@ -15,7 +15,7 @@ public class GameOverScript : MonoBehaviour {
 	void Start ()
 	{
 		player = GameObject.Find ("FPSController");
-        scoreController = GameObject.Find("Score Display").GetComponent<ScoreControllerScript>();
+        scoreManager = GameObject.Find("Game Manager").GetComponent<ScoreManager>();
 	}
 
 	void Update ()
@@ -51,10 +51,10 @@ public class GameOverScript : MonoBehaviour {
         gameOverScreen.SetActive(true);
 
         // Update final score number.
-        GameObject.Find("Final Score Number").GetComponent<TextMesh>().text = scoreController.score.ToString();
+        GameObject.Find("Final Score Number").GetComponent<TextMesh>().text = scoreManager.score.ToString();
 
         // If this is a high score, show the name entry interface.
-        if (scoreController.score > scoreController.highScoreList[9].score)
+        if (scoreManager.score > scoreManager.highScoreList[9].score)
         {
             nameEntry.SetActive(true);
         }            // Enable cursor
@@ -74,10 +74,10 @@ public class GameOverScript : MonoBehaviour {
         gameOverScreen.SetActive(true);
 
         // Update final score number.
-        GameObject.Find("Final Score Number").GetComponent<TextMesh>().text = scoreController.score.ToString();
+        GameObject.Find("Final Score Number").GetComponent<TextMesh>().text = scoreManager.score.ToString();
 
         // If this is a high score, show the name entry interface.
-        if (scoreController.score > scoreController.highScoreList[9].score)
+        if (scoreManager.score > scoreManager.highScoreList[9].score)
         {
             nameEntry.SetActive(true);
         }

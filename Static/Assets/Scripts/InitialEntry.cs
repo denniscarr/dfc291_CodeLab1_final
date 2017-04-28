@@ -21,14 +21,14 @@ public class InitialEntry : MonoBehaviour {
     float keyCooldown = 0.09f;   // How often a keypress is registered.
     float sinceLastKeypress = 0f;
 
-    ScoreControllerScript scoreController;
+    ScoreManager scoreManager;
     Transform gameOverScreen;
     Transform nameEntry;
 
 
     void Start()
     {
-        scoreController = GameObject.Find("Score Display").GetComponent<ScoreControllerScript>();
+        scoreManager = GameObject.Find("Game Manager").GetComponent<ScoreManager>();
 
         ActiveInitial.Active = true;
     }
@@ -97,7 +97,7 @@ public class InitialEntry : MonoBehaviour {
                 // Tell the score controller to add this entry to its score list and then close this screen.
                 if (!cancel)
                 {
-                    scoreController.InsertScore(enteredInitials);
+                    scoreManager.InsertScore(enteredInitials);
                     
                 }
             }
