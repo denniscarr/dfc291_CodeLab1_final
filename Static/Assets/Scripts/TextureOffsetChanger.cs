@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class Rect1Script : MonoBehaviour {
+public class TextureOffsetChanger : MonoBehaviour {
 
 	Material mat;
 
