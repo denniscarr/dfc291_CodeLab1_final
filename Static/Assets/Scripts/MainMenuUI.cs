@@ -15,7 +15,7 @@ public class MainMenuUI : MonoBehaviour {
 
         // Enable player movement and shooting.
         GameObject.Find("FPSController").GetComponent<FirstPersonController>().enabled = true;
-        GameObject.Find("Gun").GetComponent<GunScript>().enabled = true;
+        GameObject.Find("Gun").GetComponent<Gun>().enabled = true;
 
         // Turn off the main menu.
         transform.parent.gameObject.SetActive(false);

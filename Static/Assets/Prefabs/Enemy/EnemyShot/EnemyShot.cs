@@ -10,9 +10,13 @@ public class EnemyShot : MonoBehaviour {
 
     [SerializeField] private GameObject strikeParticles;    // The particles that spawn when I hit an enemy.
 
+    GameManager gameManager;
+
 
 	private void Start ()
-    { 
+    {
+        gameManager = GameObject.Find("Game Manager").GetComponent<GameManager>();
+
         // Get the direction towards the player.
         Vector3 targetPosition = GameObject.FindGameObjectWithTag("Player").transform.position;
         targetPosition = new Vector3(targetPosition.x, targetPosition.y + 0.6f, targetPosition.z);
@@ -50,13 +54,7 @@ public class EnemyShot : MonoBehaviour {
 
 		else if (collider.tag == "Player")
         {
-			// Play various pain animations
-			GameObject.Find ("Screen").BroadcastMessage ("GetHurt");
-			GameObject.Find ("Screen").BroadcastMessage ("IncreaseShake", 0.3f);
-			GameObject.Find ("Pain Flash").GetComponent<Animator> ().SetTrigger ("Pain Flash");
-
-            // Tell the player to get hurt.
-			GameObject.Find ("Score Display").SendMessage ("GetHurt");
+            gameManager.GetHurt();
 
             // Destroy self.
             Instantiate(strikeParticles, transform.position, Quaternion.identity);

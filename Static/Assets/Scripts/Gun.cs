@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class GunScript : MonoBehaviour {
+public class Gun : MonoBehaviour {
 
     /* TWEAKABLE VARIABLES */
 
@@ -29,25 +29,22 @@ public class GunScript : MonoBehaviour {
     
 
     /* PREFABS */
-
 	public GameObject bulletPrefab;
 	public GameObject bulletStrikePrefab;
 
 	public AudioSource shootAudio;
-	public AudioSource bulletStrikeAudio;
-
+    public AudioSource bulletStrikeAudio;
     public GameObject muzzleFlash;
 
 
     /* REFERENCES */
-    ScoreManager scoreManager;
+    GameManager gameManager;
     Transform bulletSpawnTransform; // The point where bullets originate (ie the tip of the player's gun)
     Transform gunTipTransform;
     Animator animator;
     Animator parentAnimator;
 
     /* MISC */
-
     float timeSinceLastShot;
     GameObject[] bullets;    // Holds references to all bullets.
     int bulletIndex = 0;
@@ -59,8 +56,8 @@ public class GunScript : MonoBehaviour {
     {
         // Instantiate all bullet prefabs. (Just make 100 for now so I don't have to do math to figure out how many could potentially be on screen at once.)
         // Then, move them all to a far away place so the player doesn't see them.
-        bullets = new GameObject[100];
-        for (int i = 0; i < 100; i++)
+        bullets = new GameObject[200];
+        for (int i = 0; i < bullets.Length; i++)
         {
             bullets[i] = Instantiate(bulletPrefab);
             bullets[i].transform.position = new Vector3(0, -500, 0);
@@ -72,7 +69,7 @@ public class GunScript : MonoBehaviour {
         gunTipTransform = GameObject.Find("Tip").transform;
 
         // Get a reference to the score controller.
-        scoreManager = FindObjectOfType<ScoreManager>();
+        gameManager = FindObjectOfType<GameManager>();
 
         animator = GetComponent<Animator>();
         parentAnimator = GetComponentInParent<Animator>();
@@ -169,7 +166,7 @@ public class GunScript : MonoBehaviour {
                 hit.collider.GetComponent<Enemy>().HP -= 1;
 
                 // Tell the score controller that the player hit an enemy with a bullet.
-                scoreManager.BulletHit();
+                gameManager.BulletHit();
 
                 // We only want to play the bullet strike sound once, not once for every bullet that hit an enemy. So set a bool which tells the sound to play
                 // later on.

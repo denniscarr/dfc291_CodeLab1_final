@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class MusicScript : MonoBehaviour {
+public class MusicManager : MonoBehaviour {
 
 	[SerializeField] private AudioClip[] tracks;    // An array holding references to the music tracks I will choose from.
     Stack<AudioClip> trackStack;

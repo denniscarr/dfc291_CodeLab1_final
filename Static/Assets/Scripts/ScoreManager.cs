@@ -18,8 +18,9 @@ public class ScoreManager : MonoBehaviour
 
         set
         {
-            _score = Mathf.RoundToInt(score + value * multiplier);
+            _score += Mathf.RoundToInt(value * multiplier);
             scoreDisplay.text = _score.ToString();
+            _score = value;
         }
     }// The player's current score. 
     [SerializeField] private TextMesh scoreDisplay;   // A reference to the TextMesh which displays the score.
@@ -38,9 +39,8 @@ public class ScoreManager : MonoBehaviour
     float multiplier = 1f;  // The multiplier that the player starts the game with.
 
     // HIGH SCORE LIST
-    [SerializeField] public List<ScoreEntry> highScoreList;
+    [SerializeField] public List<ScoreEntry> highScoreEntries;
     [SerializeField] Transform highScoreListText;
-    [SerializeField] Transform highScoreScreen;
 
     // SCORE/MULTIPLIER VALUE OF VARIOUS THINGS
     [SerializeField] private int enemyScoreValue = 1000;  // How many points the player gets for killing an enemy (without multiplier applied)
@@ -48,33 +48,6 @@ public class ScoreManager : MonoBehaviour
     [SerializeField] private float enemyMultValue = 0.5f; // How much the player's multiplier increases for killing an enemy.
     [SerializeField] private float bulletHitValue = 0.01f;    // How much the player's multiplier increases for hitting an enemy with one bullet.
     [SerializeField] private float getHurtPenalty = 0.1f; // How much the multiplier bar decreases when the player is hurt.
-
-    // AUDIO
-    [SerializeField] private AudioSource levelWinAudio;   // The audio source that plays when the player completes a level.
-    [SerializeField] private AudioSource playerHurtAudio; // The audio source that plays when the player is hurt.
-
-    // USED FOR LEVEL GENERATION
-    public int levelNumber = 0;    // The current level.
-    int numberOfEnemies = 4;    // The number of enemies that spawned in the current level.
-    int currentEnemyAmt;    // The number of enemies currently alive in this level.
-    LevelGenerator levelGenerator;  // A reference to the level generator script.
-
-    // MISC REFERENCES
-    Transform floor;    // The floor of the game environment.
-    [SerializeField] Transform gameOverScreen;  // The game over screen.
-    [SerializeField] Transform nameEntry;   // The name entry screen.
-    [SerializeField] GameObject mainMenu;   // The main menu screen.
-
-    void Awake()
-    {
-        // Pause everything for the main menu.
-        foreach (GameObject enemy in GameObject.FindGameObjectsWithTag("Enemy"))
-        {
-            enemy.GetComponent<Enemy>().enabled = false;
-        }
-        GameObject.Find("FPSController").GetComponent<FirstPersonController>().enabled = false;
-        GameObject.Find("Gun").GetComponent<GunScript>().enabled = false;
-    }
 
 
     void Start()
@@ -93,29 +66,13 @@ public class ScoreManager : MonoBehaviour
         scoreDisplay.text = score.ToString();
         multNumber.text = multiplier.ToString() + "X";
 
-        // Set up the current number of enemies.
-        currentEnemyAmt = numberOfEnemies;
-
-        // Get references to floor and level generator.
-        floor = GameObject.Find("Floor").transform;
-        levelGenerator = GetComponent<LevelGenerator>();
-
         // Set up high score list.
-        highScoreList = LoadHighScores();
+        highScoreEntries = LoadHighScores();
     }
 
 
     void Update()
     {
-        // If the player presses fire on the high scores screen, reload the main scene.
-        if (highScoreScreen.gameObject.activeSelf)
-        {
-            if (Input.GetButtonDown("Fire1"))
-            {
-                SceneManager.LoadScene("mainScene");
-            }
-        }
-
         // Apply decay to the multiplier bar
         multBarValueCurr -= multBarDecayCurr * Time.deltaTime;
         multBarValueCurr = Mathf.Clamp(multBarValueCurr, 0f, 1f);
@@ -167,38 +124,16 @@ public class ScoreManager : MonoBehaviour
 
         // Round the score to an integer and update the score display.
         score += enemyScoreValue;
-
-        // See if the player has killed all the enemies in this level. If so, change the level.
-        currentEnemyAmt -= 1;
-        if (currentEnemyAmt <= 0)
-        {
-            EndLevel();
-        }
     }
 
 
     /// <summary>
     /// Is called when player beats the current level.
     /// </summary>
-    void EndLevel()
+    public void LevelBeaten()
     {
-        levelWinAudio.Play();
-
-        // Disable the floor's collider so the player falls through it.
-        floor.GetComponent<MeshCollider>().enabled = false;
-
-        // Increase level number.
-        levelNumber += 1;
-
-        // Set the number of enemies for the next level.
-        numberOfEnemies = levelNumber * 7;
-
         // Give the player a score boost for beating the level.
         score += levelWinScoreValue;
-
-        // Generate a new level.
-        levelGenerator.Invoke("Generate", 1.4f);
-        currentEnemyAmt = numberOfEnemies;
     }
     
 
@@ -207,7 +142,7 @@ public class ScoreManager : MonoBehaviour
     /// </summary>
     public void BulletHit()
     {
-        score += Mathf.RoundToInt(multiplier);
+        score += 1;
         multBarValueCurr += bulletHitValue;
     }
 
@@ -215,9 +150,8 @@ public class ScoreManager : MonoBehaviour
     /// <summary>
     /// Should be called when the player gets hurt.
     /// </summary>
-    void GetHurt()
+    public void GetHurt()
     {  
-        playerHurtAudio.Play();
         multBarValueCurr -= getHurtPenalty;
     }
 
@@ -256,24 +190,21 @@ public class ScoreManager : MonoBehaviour
     {
         for (int i = 0; i < 10; i++)
         {
-            PlayerPrefs.SetString("HighScoreName" + i, highScoreList[i].initials);
-            PlayerPrefs.SetInt("HighScoreNumber" + i, highScoreList[i].score);
+            PlayerPrefs.SetString("HighScoreName" + i, highScoreEntries[i].initials);
+            PlayerPrefs.SetInt("HighScoreNumber" + i, highScoreEntries[i].score);
         }
     }
 
 
-    // Shows the high score list.
-    public void ShowHighScores()
+    public void LoadScoresForHighScoreScreen()
     {
-        highScoreList = LoadHighScores();
-
-        highScoreScreen.gameObject.SetActive(true);
+        highScoreEntries = LoadHighScores();
 
         string scoreList = "";
 
-        for (int i = 0; i < highScoreList.Count; i++)
+        for (int i = 0; i < highScoreEntries.Count; i++)
         {
-            scoreList += highScoreList[i].initials + ": " + highScoreList[i].score + "\n";
+            scoreList += highScoreEntries[i].initials + ": " + highScoreEntries[i].score + "\n";
         }
 
         highScoreListText.GetComponent<TextMesh>().text = scoreList;
@@ -283,47 +214,24 @@ public class ScoreManager : MonoBehaviour
     // Insters a score into the list.
     public void InsertScore(string initials)
     {
-        LoadHighScores();
-
-        //bool inserted = false;
-        //for (int i = 0; i < highScoreList.Count; i++)
-        //{
-        //    Debug.Log(highScoreList[i]);
-
-        //    // See if the current score is greater than this score on the list.
-        //    if (score > highScoreList[i].score)
-        //    {
-        //        if (!inserted)
-        //        {
-        //            highScoreList.Insert(i, new ScoreEntry(initials, score));
-        //            inserted = true;
-        //        }
-        //    }
-
-        //    else
-        //    {
-        //        highScoreList.RemoveAt(i);
-        //    }
-        //}
+        highScoreEntries = LoadHighScores();
 
         // Add and sort list
-        highScoreList.Add(new ScoreEntry(initials, score));
-        highScoreList.Sort(delegate (ScoreEntry b, ScoreEntry a)
+        highScoreEntries.Add(new ScoreEntry(initials, score));
+        highScoreEntries.Sort(delegate (ScoreEntry b, ScoreEntry a)
         {
             return (a.score.CompareTo(b.score));
         });
 
         // Remove excess entries
-        for (int i = 10; i < highScoreList.Count; i++)
+        for (int i = 10; i < highScoreEntries.Count; i++)
         {
-            highScoreList.RemoveAt(i);
+            highScoreEntries.RemoveAt(i);
         }
 
         // Stop showing game over screen and show high score list instead.
-        gameOverScreen.gameObject.SetActive(false);
-        nameEntry.gameObject.SetActive(false);
         SaveHighScores();
-        ShowHighScores();
+        LoadScoresForHighScoreScreen();
     }
 
 

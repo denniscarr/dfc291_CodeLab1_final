@@ -32,7 +32,7 @@ public class LevelGenerator : MonoBehaviour {
 
 	public void Generate ()
 	{
-        numberOfEnemies = GameObject.Find("Game Manager").GetComponent<ScoreManager>().levelNumber * enemiesAddedPerLevel;
+        numberOfEnemies = GameObject.Find("Game Manager").GetComponent<GameManager>().levelNumber * enemiesAddedPerLevel;
         numberOfObstacles = Random.Range(numberOfObstaclesMin, numberOfObstaclesMax);
 
         // Clear level of all current obstacles and enemies.
