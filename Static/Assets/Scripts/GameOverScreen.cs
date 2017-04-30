@@ -8,8 +8,8 @@ public class GameOverScreen : MonoBehaviour
 
     GameObject player;
     ScoreManager scoreManager;
-    [SerializeField]
-    GameObject nameEntryScreen;
+    [SerializeField] GameObject nameEntryScreen;
+
 
     private void Awake()
     {
@@ -38,7 +38,8 @@ public class GameOverScreen : MonoBehaviour
         GameObject.Find("Final Score Number").GetComponent<TextMesh>().text = scoreManager.score.ToString();
 
         // If this is a high score, show the name entry interface.
-        if (scoreManager.score > scoreManager.highScoreEntries[9].score)
+        if (scoreManager.score > 
+            scoreManager.highScoreEntries[9].score)
         {
             nameEntryScreen.SetActive(true);
         }

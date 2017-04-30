@@ -8,7 +8,7 @@ using System.Collections.Generic;
 public class ScoreManager : MonoBehaviour
 {
     // USED FOR DISPLAYING THE SCORE
-    private int _score = 0;
+    [SerializeField] private int _score = 0;
     public int score
     {
         get
@@ -18,9 +18,10 @@ public class ScoreManager : MonoBehaviour
 
         set
         {
-            _score += Mathf.RoundToInt(value * multiplier);
+            int inputValue = value - _score;
+            inputValue = Mathf.RoundToInt(inputValue * multiplier);
+            _score += inputValue;
             scoreDisplay.text = _score.ToString();
-            _score = value;
         }
     }// The player's current score. 
     [SerializeField] private TextMesh scoreDisplay;   // A reference to the TextMesh which displays the score.

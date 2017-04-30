@@ -8,7 +8,7 @@ public class PauseMenu : MonoBehaviour {
 
 	void Update()
     {
-		if (Input.GetButtonDown("Cancel"))
+		if (Input.GetButtonDown("Back"))
         {
 			MenuButton();
 		}

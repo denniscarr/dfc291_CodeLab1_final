@@ -93,7 +93,7 @@ public class Gun : MonoBehaviour {
         // Run shot timer.
         timeSinceLastShot += Time.deltaTime;
 
-		if (Input.GetButton ("Fire1") && timeSinceLastShot >= 1/burstsPerSecond)
+		if ((Input.GetButton ("Fire1") || Input.GetAxisRaw("Fire1") != 0) && timeSinceLastShot >= 1/burstsPerSecond)
 		{
 			// Fire a burst
 			FireBurst(bulletsPerBurst, inaccuracy);

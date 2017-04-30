@@ -20,7 +20,6 @@ public class HealthManager : MonoBehaviour {
             GameObject.Find("Pain Flash").GetComponent<Animator>().SetTrigger("Pain Flash");
 
             // Delete health box.
-            Debug.Log(value);
             healthBlocks[value].SetActive(false);
 
             // Lower health.
