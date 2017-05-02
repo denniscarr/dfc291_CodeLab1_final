@@ -36,17 +36,20 @@ public class LevelGenerator : MonoBehaviour {
         numberOfObstacles = Random.Range(numberOfObstaclesMin, numberOfObstaclesMax);
 
         // Clear level of all current obstacles and enemies.
-        GameObject[] stuffToDelete = GameObject.FindGameObjectsWithTag("Enemy");
-		foreach (GameObject go in stuffToDelete)
+		foreach (GameObject go in GameObject.FindGameObjectsWithTag("Enemy"))
         {
 			Destroy (go);
 		}
 
-		stuffToDelete = GameObject.FindGameObjectsWithTag("Obstacle");
-		foreach (GameObject go in stuffToDelete)
+		foreach (GameObject go in GameObject.FindGameObjectsWithTag("Obstacle"))
         {
 			Destroy (go);
 		}
+
+        foreach (EnemyShot shot in FindObjectsOfType<EnemyShot>())
+        {
+            Destroy(shot.gameObject);
+        }
 			
 		// Put all things in the level.
 		for (int i = 0; i < numberOfObstacles; i++) {

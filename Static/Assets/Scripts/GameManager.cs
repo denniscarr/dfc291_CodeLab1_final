@@ -59,6 +59,7 @@ public class GameManager : MonoBehaviour {
         // See if the player has killed all the enemies in this level. If so, change the level.
         scoreManager.KilledEnemy();
         currentEnemyAmt -= 1;
+
         if (currentEnemyAmt <= 0)
         {
             LevelBeaten();
