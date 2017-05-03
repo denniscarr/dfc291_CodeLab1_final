@@ -56,7 +56,7 @@ public class HomingShot : EnemyShot {
         /* VISUALS */
 
         // Set scale based on velocity.
-        float scaleScalar = MyMath.Map(velocity.magnitude, minSpeed, maxSpeed, scaleMin, scaleMax);
+        float scaleScalar = MyMath.Map(Vector3.Angle(velocity, desiredVelocity), 0f, 180f, scaleMin, scaleMax);
         Vector3 newScale = originalScale * scaleScalar;
         transform.localScale = newScale;
 
