@@ -176,7 +176,7 @@ public class Enemy : MonoBehaviour {
 	void Shoot()
     {
         // Fire a shot.
-		Instantiate (shotPrefab, transform.position, Quaternion.identity);
+		Instantiate (shotPrefab, new Vector3(transform.position.x, 1.75f, transform.position.z), Quaternion.identity);
 
         // Set the shot timer for the post shot delay.
 		shotTimer = new Timer (postShotDelay);
