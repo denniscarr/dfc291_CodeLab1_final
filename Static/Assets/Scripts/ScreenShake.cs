@@ -5,6 +5,7 @@ public class ScreenShake : MonoBehaviour {
 
 	float currentShake = 0f;   // How much the screen is currently shaking.
 	float shakeAmount = 0.3f;   // How much the screen should shake at it's most shakey shaking.
+    float vibrateAount = 0.001f;    // How much the screen should vibrate to encourage zfighting.
 	float decreaseFactor = 1.0f;    // How quickly the shake should decrease.
     float moveBackSpeed = 0.3f; // How quickly elements of the screen should move back to their original position after the shake ends.
 
@@ -39,6 +40,9 @@ public class ScreenShake : MonoBehaviour {
                 Vector3 newPosition = Vector3.Lerp(transform.position, originalPosition, moveBackSpeed * Time.deltaTime);
                 transform.position = newPosition;
             }
+
+            // Vibrate to encourage z fighting.
+            transform.position = transform.position + new Vector3(Random.insideUnitCircle.x, Random.insideUnitCircle.y, 0) * vibrateAount;
         }
     }
 
