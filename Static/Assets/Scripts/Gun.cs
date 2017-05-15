@@ -20,6 +20,10 @@ public class Gun : MonoBehaviour {
     // How far bullets can travel.
     [SerializeField] float bulletRange = 500f;
 
+    // Damage per bullet
+    [SerializeField] int bulletDamageMin = 5;
+    [SerializeField] int bulletDamageMax = 15;
+
     // Bullet Color
     [SerializeField] Color bulletColor1;
     [SerializeField] Color bulletColor2;
@@ -163,7 +167,7 @@ public class Gun : MonoBehaviour {
 			if (hit.collider.tag == "Enemy")
             {
                 // Tell the enemy it was hurt.
-                hit.collider.GetComponent<Enemy>().HP -= 1;
+                hit.collider.GetComponent<Enemy>().HP -= Random.Range(bulletDamageMin, bulletDamageMax);
 
                 // Tell the score controller that the player hit an enemy with a bullet.
                 gameManager.BulletHit();

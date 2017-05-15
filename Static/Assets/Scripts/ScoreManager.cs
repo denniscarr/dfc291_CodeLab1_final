@@ -25,6 +25,7 @@ public class ScoreManager : MonoBehaviour
         }
     }// The player's current score. 
     [SerializeField] private TextMesh scoreDisplay;   // A reference to the TextMesh which displays the score.
+    [SerializeField] private TextMesh highScoreDisplay; // A reference to the TextMesh which displays the current high score at the top of the screen.
 
     // USED FOR THE MULTIPLIER BAR
     [SerializeField] private GameObject multiplierBar;    // A reference to the multiplier bar GameObject.
@@ -63,12 +64,13 @@ public class ScoreManager : MonoBehaviour
             multiplierBar.transform.localScale.z
         );
 
-        // Set up the score and multiplier number displays.
-        scoreDisplay.text = score.ToString();
-        multNumber.text = multiplier.ToString() + "X";
-
         // Set up high score list.
         highScoreEntries = LoadHighScores();
+
+        // Set up the score and multiplier number displays.
+        scoreDisplay.text = score.ToString();
+        highScoreDisplay.text = GetHighestScore().ToString();
+        multNumber.text = multiplier.ToString() + "X";
     }
 
 
@@ -217,8 +219,27 @@ public class ScoreManager : MonoBehaviour
     {
         highScoreEntries = LoadHighScores();
 
-        // Add and sort list
+        // Add score to list
         highScoreEntries.Add(new ScoreEntry(initials, score));
+
+        SortScores();
+
+        // Stop showing game over screen and show high score list instead.
+        SaveHighScores();
+        LoadScoresForHighScoreScreen();
+    }
+
+
+    int GetHighestScore()
+    {
+        SortScores();
+        return highScoreEntries[0].score;
+    }
+
+
+    void SortScores()
+    {
+        // Add and sort list
         highScoreEntries.Sort(delegate (ScoreEntry b, ScoreEntry a)
         {
             return (a.score.CompareTo(b.score));
@@ -229,10 +250,6 @@ public class ScoreManager : MonoBehaviour
         {
             highScoreEntries.RemoveAt(i);
         }
-
-        // Stop showing game over screen and show high score list instead.
-        SaveHighScores();
-        LoadScoresForHighScoreScreen();
     }
 
 
