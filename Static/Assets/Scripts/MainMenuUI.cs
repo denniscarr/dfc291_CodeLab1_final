@@ -5,7 +5,16 @@ using System.Collections;
 
 public class MainMenuUI : MonoBehaviour {
 
-	public void PlayButton()
+    private void Update()
+    {
+        // Get controller input.
+        if (Input.GetButtonDown("Start"))
+        {
+            PlayButton();
+        }
+    }
+
+    public void PlayButton()
     {
         // Unpause enemies in the background.
         foreach (GameObject enemy in GameObject.FindGameObjectsWithTag("Enemy"))

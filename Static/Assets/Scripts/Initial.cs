@@ -15,11 +15,13 @@ public class Initial : MonoBehaviour {
             if (value == true)
             {
                 textMesh.color = parentScript.activeColor;
+                transform.localScale = Vector3.one * parentScript.activeScale;
             }
 
             else
             {
                 textMesh.color = parentScript.inactiveColor;
+                transform.localScale = Vector3.one * parentScript.inactiveScale;
             }
         }
     }

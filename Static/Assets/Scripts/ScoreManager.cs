@@ -253,6 +253,20 @@ public class ScoreManager : MonoBehaviour
     }
 
 
+    public void ResetScores()
+    {
+        highScoreEntries = LoadHighScores();
+
+        for (int i = 0; i < 10; i++)
+        {
+            highScoreEntries[i].score = 0;
+            highScoreEntries[i].initials = "AAA";
+        }
+
+        SaveHighScores();
+    }
+
+
     public class ScoreEntry
     {
         public string initials;

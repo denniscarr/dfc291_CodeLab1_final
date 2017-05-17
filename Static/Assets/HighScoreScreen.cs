@@ -6,7 +6,7 @@ public class HighScoreScreen : MonoBehaviour {
 
 	private void Update()
     {
-        if (Input.GetAxis("Fire1") > 0.7f)
+        if (Input.GetButtonDown("Start"))
         {
             GameObject.Find("Game Manager").GetComponent<GameManager>().RestartGame();
         }

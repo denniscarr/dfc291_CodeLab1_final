@@ -18,6 +18,9 @@ public class InitialEntry : MonoBehaviour {
     public Color activeColor;   // The color of the letter when it is active.
     public Color inactiveColor;
 
+    public float activeScale = 1.1f;
+    public float inactiveScale = 1.0f;
+
     float keyCooldown = 0.09f;   // How often a keypress is registered.
     float sinceLastKeypress = 0f;
 
@@ -93,7 +96,8 @@ public class InitialEntry : MonoBehaviour {
             sinceLastKeypress = 0f;
 
             // If the player is finished they should press fire.
-            if (AllInitialsEntered() && (Input.GetButtonDown("Fire1") || Input.GetKey(KeyCode.Return) || Input.GetAxisRaw("Fire1") > joystickDeadzone))
+            //if (AllInitialsEntered() && (Input.GetButtonDown("Fire1") || Input.GetKey(KeyCode.Return) || Input.GetAxisRaw("Fire1") > joystickDeadzone))
+            if (AllInitialsEntered() && Input.GetButtonDown("Start") || Input.GetKey(KeyCode.Return))
             {
                 // Go through each initial and add it to a string.
                 string enteredInitials = "";
