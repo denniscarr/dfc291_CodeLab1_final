@@ -8,7 +8,7 @@ public class MainMenuUI : MonoBehaviour {
     private void Update()
     {
         // Get controller input.
-		if (Input.GetButtonDown("Start") || Input.GetKeyDown(KeyCode.Return))
+		if (Input.GetButtonDown("Start") || Input.GetKeyDown(KeyCode.Return) || Input.GetButtonDown("Fire1"))
         {
             PlayButton();
         }
