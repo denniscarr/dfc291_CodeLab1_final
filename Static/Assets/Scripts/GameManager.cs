@@ -84,7 +84,6 @@ public class GameManager : MonoBehaviour {
             }
 
             timeSinceLastInput += Time.deltaTime;
-            Debug.Log("Time since last input: " + timeSinceLastInput);
         }
     }
 

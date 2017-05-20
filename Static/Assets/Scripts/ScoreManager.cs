@@ -289,6 +289,8 @@ public class ScoreManager : MonoBehaviour
             highScoreEntries[i].initials = "AAA";
         }
 
+        PlayerPrefs.DeleteAll();
+
         SaveHighScores();
     }
 
