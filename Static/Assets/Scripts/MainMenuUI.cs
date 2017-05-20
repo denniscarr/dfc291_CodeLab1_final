@@ -12,6 +12,12 @@ public class MainMenuUI : MonoBehaviour {
         {
             PlayButton();
         }
+
+        // Use escape to quit game.
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            Application.Quit();
+        }
     }
 
     public void PlayButton()
