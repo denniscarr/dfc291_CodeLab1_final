@@ -21,6 +21,11 @@ public class GameManager : MonoBehaviour {
     [SerializeField] GameObject nameEntryScreen;
     [SerializeField] GameObject mainMenuScreen; 
 
+    // USED FOR TIMER
+    [SerializeField] float idleResetTime = 20f;
+    float timeSinceLastInput = 0f;
+    public bool gameStarted = false;
+
     // MISC REFERENCES
     Transform floor;    // The floor of the game environment.
     ScoreManager scoreManager;
@@ -51,6 +56,36 @@ public class GameManager : MonoBehaviour {
         healthManager = GetComponent<HealthManager>();
         levelGenerator = GetComponent<LevelGenerator>();
         player = GameObject.Find("FPSController");
+    }
+
+
+    private void Update()
+    {
+        // Run idle timer.
+        if (gameStarted)
+        {
+            if (timeSinceLastInput >= idleResetTime)
+            {
+                SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+            }
+
+            bool buttonPressed = false;
+            for (int i = 0; i < 20; i++)
+            {
+                if (Input.GetKeyDown("joystick 1 button " + i.ToString()))
+                {
+                    buttonPressed = true;
+                }
+            }
+
+            if (Input.anyKeyDown || buttonPressed || Input.GetAxisRaw("Horizontal") != 0 || Input.GetAxisRaw("Vertical") != 0)
+            {
+                timeSinceLastInput = 0f;
+            }
+
+            timeSinceLastInput += Time.deltaTime;
+            Debug.Log("Time since last input: " + timeSinceLastInput);
+        }
     }
 
 

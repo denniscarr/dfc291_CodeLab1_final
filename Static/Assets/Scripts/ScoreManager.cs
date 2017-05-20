@@ -4,6 +4,7 @@ using UnityEngine.SceneManagement;
 using UnityStandardAssets.Characters.FirstPerson;
 using System.Collections;
 using System.Collections.Generic;
+using DG.Tweening;
 
 public class ScoreManager : MonoBehaviour
 {
@@ -31,14 +32,29 @@ public class ScoreManager : MonoBehaviour
     [SerializeField] private GameObject multiplierBar;    // A reference to the multiplier bar GameObject.
     [SerializeField] private float multBarStartVal = 0.4f;    // How large of a multiplier the player starts the game with.
     [SerializeField] private float multBarBaseDecay = 0.01f;  // How quickly the multiplier bar shrinks (increases as the player's multiplier increases)
+
     [SerializeField] private float multBarSizeMin = 0.03f;    // The multiplier bar's smallest size.
     [SerializeField] private float multBarSizeMax = 7.15f;    // The multiplier bar's largets size.
+    [SerializeField] private float multBarBottomPos = -2.92f;   // The position of the multiplier bar's lowest point.
+    [SerializeField] private float multBarTweenSpeed = 0.4f;    // How quickly the multiplier bar changes size.
+
     float multBarValueCurr;   // The current size of the multiplier bar (as percentage of it's max size).
     float multBarDecayCurr;     // How quickly the multiplier bar currently shrinks.
     float multBarStartValCurr;  // Where the multiplier bar starts at the player's current multiplier (decreases as the multiplier increases).
 
     [SerializeField] private TextMesh multNumber; // The TextMesh which displays the player's current multiplier.
-    float multiplier = 1f;  // The multiplier that the player starts the game with.
+    float _multiplier = 1f;  // The multiplier that the player starts the game with.
+    float multiplier
+    {
+        get { return _multiplier; }
+        set
+        {
+            // Update the multiplier number display.
+            multNumber.text = multiplier.ToString() + "X";
+
+            _multiplier = value;
+        }
+    }
 
     // HIGH SCORE LIST
     [SerializeField] public List<ScoreEntry> highScoreEntries;
@@ -69,7 +85,7 @@ public class ScoreManager : MonoBehaviour
 
         // Set up the score and multiplier number displays.
         scoreDisplay.text = score.ToString();
-        highScoreDisplay.text = GetHighestScore().ToString();
+        highScoreDisplay.text = GetHighestScore().initials + ": " + GetHighestScore().score.ToString();
         multNumber.text = multiplier.ToString() + "X";
     }
 
@@ -81,24 +97,37 @@ public class ScoreManager : MonoBehaviour
         multBarValueCurr = Mathf.Clamp(multBarValueCurr, 0f, 1f);
 
         // If the multiplier bar value has gone below zero, lower the player's multiplier.
-        if (multBarValueCurr <= 0f && multiplier > 1f)
-        {
-            // Lower the multiplier.
-            multiplier -= 0.1f;
+        //if (multBarValueCurr <= 0f && multiplier > 1f)
+        //{
+        //    // Lower the multiplier.
+        //    multiplier -= 0.1f;
 
-            // Get the values for the new multiplier level.
-            multBarStartValCurr = multBarStartVal / multiplier;
-            multBarValueCurr = multBarStartValCurr;
-            multBarDecayCurr = multBarBaseDecay * multiplier;
-            multNumber.text = multiplier.ToString() + "X";
-        }
+        //    // Get the values for the new multiplier level.
+        //    multBarStartValCurr = multBarStartVal / multiplier;
+        //    multBarValueCurr = multBarStartValCurr;
+        //    multBarDecayCurr = multBarBaseDecay * multiplier;
+        //    multNumber.text = multiplier.ToString() + "X";
+        //}
 
-        // Update the size of the multiplier bar.
-        multiplierBar.transform.localScale = new Vector3(
-            multiplierBar.transform.localScale.x,
-            MyMath.Map(multBarValueCurr, 0f, 1f, multBarSizeMin, multBarSizeMax),
-            multiplierBar.transform.localScale.z
-        );
+        // Update the size and position of the multiplier bar.
+        float newYScale = MyMath.Map(multBarValueCurr, 0f, 1f, multBarSizeMin, multBarSizeMax);
+        multiplierBar.transform.DOScaleY(newYScale, multBarTweenSpeed);
+
+        float newYPos = multBarBottomPos + multiplierBar.transform.localScale.y * 0.5f;
+        multiplierBar.transform.localPosition = new Vector3(
+                multiplierBar.transform.localPosition.x,
+                newYPos,
+                multiplierBar.transform.localPosition.z
+            );
+        //multiplierBar.transform.DOLocalMoveY(newYPos, multBarTweenSpeed);
+
+        // Set multiplier bar value based on it's current size.
+        if (multiplierBar.transform.localScale.y > 6f) multiplier = 6;
+        else if (multiplierBar.transform.localScale.y > 4.4f) multiplier = 5;
+        else if (multiplierBar.transform.localScale.y > 2.6f) multiplier = 4;
+        else if (multiplierBar.transform.localScale.y > 1.35f) multiplier = 3;
+        else if (multiplierBar.transform.localScale.y > 0.5f) multiplier = 2;
+        else multiplier = 1;
     }
 
 
@@ -114,16 +143,13 @@ public class ScoreManager : MonoBehaviour
         multBarValueCurr += multBarIncreaseAmt;
 
         // If value of the multiplier bar has gotten to 1, raise the player's multiplier and set the multiplier bar values for the new multiplier level.
-        if (multBarValueCurr >= 1f)
-        {
-            multiplier += 0.1f;
-            multBarStartValCurr = multBarStartVal / multiplier;
-            multBarValueCurr = multBarStartValCurr;
-            multBarDecayCurr = multBarBaseDecay * multiplier;
-        }
-
-        // Update the multiplier number display.
-        multNumber.text = multiplier.ToString() + "X";
+        //if (multBarValueCurr >= 1f)
+        //{
+        //    multiplier += 0.1f;
+        //    multBarStartValCurr = multBarStartVal / multiplier;
+        //    multBarValueCurr = multBarStartValCurr;
+        //    multBarDecayCurr = multBarBaseDecay * multiplier;
+        //}
 
         // Round the score to an integer and update the score display.
         score += enemyScoreValue;
@@ -230,10 +256,10 @@ public class ScoreManager : MonoBehaviour
     }
 
 
-    int GetHighestScore()
+    ScoreEntry GetHighestScore()
     {
         SortScores();
-        return highScoreEntries[0].score;
+        return highScoreEntries[0];
     }
 
 
