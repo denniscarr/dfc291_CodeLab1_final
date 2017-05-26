@@ -37,11 +37,13 @@ public class Enemy : MonoBehaviour {
 
             else
             {
+                hurtAudio.Play();
                 _HP = value;
             }
         }
     }
 	[SerializeField] private GameObject deathParticles;
+    [SerializeField] private AudioSource hurtAudio;
     private bool isAlive = true;
 
 

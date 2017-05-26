@@ -69,6 +69,7 @@ public class GameManager : MonoBehaviour {
                 SceneManager.LoadScene(SceneManager.GetActiveScene().name);
             }
 
+            // Check all joystick buttons.
             bool buttonPressed = false;
             for (int i = 0; i < 20; i++)
             {
@@ -78,6 +79,7 @@ public class GameManager : MonoBehaviour {
                 }
             }
 
+            // See if any other buttons or keys have been pressed.
             if (Input.anyKeyDown || buttonPressed || Input.GetAxisRaw("Horizontal") != 0 || Input.GetAxisRaw("Vertical") != 0)
             {
                 timeSinceLastInput = 0f;

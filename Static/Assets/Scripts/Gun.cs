@@ -18,11 +18,26 @@ public class Gun : MonoBehaviour {
     [SerializeField] float inaccuracyMax = 10f;
 
     // How far bullets can travel.
-    [SerializeField] float bulletRange = 500f;
+    public float bulletRange = 500f;
 
     // Damage per bullet
-    [SerializeField] int bulletDamageMin = 5;
-    [SerializeField] int bulletDamageMax = 15;
+    public int bulletDamageMin = 5;
+    public int bulletDamageMax = 15;
+
+    // Speed of bullets
+    [SerializeField] float bulletSpeedMin = 0f;
+    [SerializeField] float bulletSpeedMax = 5f;
+    float bulletSpeed;
+
+    // Length of bullets
+    [SerializeField] float bulletLengthMin = 0.5f;
+    [SerializeField] float bulletLengthMax = 100f;
+    float bulletLength;
+
+    // Width of bullets
+    [SerializeField] float bulletWidthMin = 0.3f;
+    [SerializeField] float bulletWidthMax = 1f;
+    float bulletWidth;
 
     // Bullet Color
     [SerializeField] Color bulletColor1;
@@ -43,7 +58,7 @@ public class Gun : MonoBehaviour {
 
     /* REFERENCES */
     GameManager gameManager;
-    Transform bulletSpawnTransform; // The point where bullets originate (ie the tip of the player's gun)
+    public Transform bulletSpawnTransform; // The point where bullets originate (ie the tip of the player's gun)
     Transform gunTipTransform;
     Animator animator;
     Animator parentAnimator;
@@ -60,7 +75,7 @@ public class Gun : MonoBehaviour {
     {
         // Instantiate all bullet prefabs. (Just make 100 for now so I don't have to do math to figure out how many could potentially be on screen at once.)
         // Then, move them all to a far away place so the player doesn't see them.
-        bullets = new GameObject[200];
+        bullets = new GameObject[500];
         for (int i = 0; i < bullets.Length; i++)
         {
             bullets[i] = Instantiate(bulletPrefab);
@@ -90,6 +105,11 @@ public class Gun : MonoBehaviour {
 		float burstsPerSecond = MyMath.Map (Mathf.Sin (Time.time*oscSpeed), -1f, 1f, burstsPerSecondMin, burstsPerSecondMax);
 		float inaccuracy = MyMath.Map (Mathf.Sin (Time.time*oscSpeed), -1f, 1f, inaccuracyMax, inaccuracyMin);
 		shootAudio.pitch = MyMath.Map (Mathf.Sin (Time.time * oscSpeed), -1f, 1f, 0.8f, 2f);
+        bulletSpeed = MyMath.Map(Mathf.Sin(Time.time * oscSpeed), -1f, 1f, bulletSpeedMax, bulletSpeedMin);
+        bulletLength = MyMath.Map(Mathf.Sin(Time.time * oscSpeed), -1f, 1f, bulletLengthMax, bulletLengthMin);
+        bulletWidth = MyMath.Map(Mathf.Sin(Time.time * oscSpeed), -1f, 1f, bulletWidthMin, bulletWidthMax);
+
+        //Debug.Log(Mathf.Sin(Time.time * oscSpeed));
 
         // Update gun animation state
         animator.SetFloat("Gun State", Mathf.Sin(Time.time * oscSpeed));
@@ -127,14 +147,16 @@ public class Gun : MonoBehaviour {
             );
 
         // Get a new bullet color based on current sine
-        bulletColor = Color.Lerp(bulletColor1, bulletColor2, MyMath.Map(Mathf.Sin(Time.time * oscSpeed), -1f, 1f, 0f, 1f));
+        //bulletColor = Color.Lerp(bulletColor1, bulletColor2, MyMath.Map(Mathf.Sin(Time.time * oscSpeed), -1f, 1f, 0f, 1f));
 
         // Fire the specified number of bullets.
 		for (int i = 0; i < numberOfBullets; i++)
         {
 			FireBullet (inaccuracy);
 		}
-	}
+
+        //Debug.Break();
+    }
 
 
     // Firing an individual bullet.
@@ -144,63 +166,64 @@ public class Gun : MonoBehaviour {
 		bulletSpawnTransform.localRotation = Quaternion.Euler(new Vector3(90+Random.insideUnitCircle.x * inaccuracy, 0, Random.insideUnitCircle.y * inaccuracy));
 
         // Declare variables for bullet size & position.
-		float bulletScale;
-		Vector3 bulletPosition;
+		//float bulletScale;
+		//Vector3 bulletPosition;
 
         // Whether we should play the bullet hit sound.
-        bool playAudio = false;
+        //bool playAudio = false;
 
         // Raycast to see if the bullet hit an object and to see where it hit.
-        RaycastHit hit;
-        if (Physics.Raycast (bulletSpawnTransform.position, bulletSpawnTransform.up, out hit, bulletRange, 1 << 8)) {
+        //RaycastHit hit;
+        //if (Physics.Raycast (bulletSpawnTransform.position, bulletSpawnTransform.up, out hit, bulletRange, 1 << 8)) {
 
 			// Show particle effect
-			Instantiate(bulletStrikePrefab, hit.point, Quaternion.identity);
+			//Instantiate(bulletStrikePrefab, hit.point, Quaternion.identity);
 
 			// The new bullet's y scale will be half of the ray's length
-			bulletScale = hit.distance / 2;
+			//bulletScale = hit.distance / 2;
 
 			// The new bullet's position will be halfway down the ray
-			bulletPosition = bulletSpawnTransform.up.normalized * (hit.distance / 2);
+			//bulletPosition = bulletSpawnTransform.up.normalized * (hit.distance / 2);
 
             // If the bullet hit an enemy...
-			if (hit.collider.tag == "Enemy")
-            {
-                // Tell the enemy it was hurt.
-                hit.collider.GetComponent<Enemy>().HP -= Random.Range(bulletDamageMin, bulletDamageMax);
-
-                // Tell the score controller that the player hit an enemy with a bullet.
-                gameManager.BulletHit();
-
+			//if (hit.collider.tag == "Enemy")
+   //         {
                 // We only want to play the bullet strike sound once, not once for every bullet that hit an enemy. So set a bool which tells the sound to play
                 // later on.
-				playAudio = true;
-			}
+				//playAudio = true;
+			//}
 
-		}
+		//}
 
         // If the bullet did not strike anything give it a generic size and position.
-        else
-        {
-			bulletScale = bulletRange/2;
-			bulletPosition = bulletSpawnTransform.up.normalized*(bulletRange/2);
-		}
+        //else
+        //{
+		//	bulletScale = bulletRange/2;
+		//	bulletPosition = bulletSpawnTransform.up.normalized*(bulletRange/2);
+		//}
 
         // If a bullet hit an enemy, play the bullet strike audio.
-		if (playAudio)
-        {
-			bulletStrikeAudio.Play ();
-		}
+		//if (playAudio)
+  //      {
+		//	bulletStrikeAudio.Play ();
+		//}
 
         // Set bullet color
         bullets[bulletIndex].GetComponent<MeshRenderer>().material.color = bulletColor;
         //bullets[bulletIndex].GetComponent<MeshRenderer>().material.SetColor("_EmissionColor", bulletColor);
+        
+        //if (bulletLength > Vector3.Distance(bulletSpawnTransform.position, hit.point))
+        //{
+        //    bulletLength = Vector3.Distance(bulletSpawnTransform.position, hit.point);
+        //}
 
-        // Fire bullet.
+        // Fire the bullet.
         bullets[bulletIndex].GetComponent<PlayerBullet>().GetFired(
-            bulletSpawnTransform.position + bulletPosition,
+            bulletSpawnTransform.up,
             bulletSpawnTransform.rotation,
-            new Vector3(bulletPrefab.transform.localScale.x, bulletScale, bulletPrefab.transform.localScale.z)
+            bulletSpeed,
+            bulletLength,
+            bulletWidth
         );
 
         // Get a new bullet index.
