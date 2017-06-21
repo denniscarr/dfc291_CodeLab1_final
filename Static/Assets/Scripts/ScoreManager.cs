@@ -29,16 +29,16 @@ public class ScoreManager : MonoBehaviour
     [SerializeField] private TextMesh highScoreDisplay; // A reference to the TextMesh which displays the current high score at the top of the screen.
 
     // USED FOR THE MULTIPLIER BAR
-    [SerializeField] private GameObject multiplierBar;    // A reference to the multiplier bar GameObject.
+    [SerializeField] public GameObject multiplierBar;    // A reference to the multiplier bar GameObject.
     [SerializeField] private float multBarStartVal = 0.4f;    // How large of a multiplier the player starts the game with.
     [SerializeField] private float multBarBaseDecay = 0.01f;  // How quickly the multiplier bar shrinks (increases as the player's multiplier increases)
 
-    [SerializeField] private float multBarSizeMin = 0.03f;    // The multiplier bar's smallest size.
+    [SerializeField] public float multBarSizeMin = 0.03f;    // The multiplier bar's smallest size.
     [SerializeField] private float multBarSizeMax = 7.15f;    // The multiplier bar's largets size.
     [SerializeField] private float multBarBottomPos = -2.92f;   // The position of the multiplier bar's lowest point.
     [SerializeField] private float multBarTweenSpeed = 0.4f;    // How quickly the multiplier bar changes size.
 
-    float multBarValueCurr;   // The current size of the multiplier bar (as percentage of it's max size).
+    [HideInInspector] public float multBarValueCurr;   // The current size of the multiplier bar (as percentage of it's max size).
     float multBarDecayCurr;     // How quickly the multiplier bar currently shrinks.
     float multBarStartValCurr;  // Where the multiplier bar starts at the player's current multiplier (decreases as the multiplier increases).
 
@@ -93,8 +93,11 @@ public class ScoreManager : MonoBehaviour
     void Update()
     {
         // Apply decay to the multiplier bar
-        multBarValueCurr -= multBarDecayCurr * Time.deltaTime;
-        multBarValueCurr = Mathf.Clamp(multBarValueCurr, 0f, 1f);
+        if (FindObjectOfType<GameManager>().gameStarted)
+        {
+            multBarValueCurr -= multBarDecayCurr * Time.deltaTime;
+            multBarValueCurr = Mathf.Clamp(multBarValueCurr, 0f, 1f);
+        }
 
         // If the multiplier bar value has gone below zero, lower the player's multiplier.
         //if (multBarValueCurr <= 0f && multiplier > 1f)

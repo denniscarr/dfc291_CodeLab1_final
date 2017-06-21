@@ -12,7 +12,7 @@ public class GameManager : MonoBehaviour {
     // USED FOR LEVEL GENERATION
     public int levelNumber = 0;    // The current level.
     int numberOfEnemies = 4;    // The number of enemies that spawned in the current level.
-    int currentEnemyAmt;    // The number of enemies currently alive in this level.
+    public int currentEnemyAmt;    // The number of enemies currently alive in this level.
     LevelGenerator levelGenerator;  // A reference to the level generator script.
 
     // MENU SCREENS
@@ -26,11 +26,15 @@ public class GameManager : MonoBehaviour {
     float timeSinceLastInput = 0f;
     public bool gameStarted = false;
 
+    // USED FOR SINE TRACKER
+    public float currentSine;
+    public float oscSpeed = 0.3f;
+
     // MISC REFERENCES
     Transform floor;    // The floor of the game environment.
     ScoreManager scoreManager;
     HealthManager healthManager;
-    GameObject player;
+    [HideInInspector] public GameObject player;
 
 
     void Awake()
@@ -41,7 +45,10 @@ public class GameManager : MonoBehaviour {
             enemy.GetComponent<Enemy>().enabled = false;
         }
         GameObject.Find("FPSController").GetComponent<FirstPersonController>().enabled = false;
-        GameObject.Find("Gun").GetComponent<Gun>().enabled = false;
+        foreach(Gun gun in FindObjectsOfType<Gun>())
+        {
+            gun.enabled = false;
+        }
     }
 
 
@@ -49,6 +56,8 @@ public class GameManager : MonoBehaviour {
     {
         // Set up the current number of enemies.
         currentEnemyAmt = numberOfEnemies;
+
+        currentSine = Mathf.Sin(Time.time * oscSpeed);
 
         // Get references
         floor = GameObject.Find("Floor").transform;
@@ -61,6 +70,10 @@ public class GameManager : MonoBehaviour {
 
     private void Update()
     {
+        // Update sine
+        currentSine = Mathf.Sin(Time.time * oscSpeed);
+        //currentSine = MyMath.Map(player.transform.rotation.eulerAngles.y, 0f, 360f, -1f, 1);
+
         // Run idle timer.
         if (gameStarted)
         {
@@ -110,25 +123,21 @@ public class GameManager : MonoBehaviour {
         scoreManager.LevelBeaten();
 
         // Disable the floor's collider so the player falls through it.
-        floor.GetComponent<MeshCollider>().enabled = false;
+        floor.GetComponent<Collider>().enabled = false;
 
         // Increase level number.
         levelNumber += 1;
 
-        // Set the number of enemies for the next level.
-        numberOfEnemies = levelNumber * 7;
-
         // Generate a new level.
         levelGenerator.Invoke("Generate", 1.4f);
-        currentEnemyAmt = numberOfEnemies;
     }
 
 
-    public void GetHurt()
+    public void PlayerHurt()
     {
         scoreManager.GetHurt();
 
-        healthManager.playerHealth -= 1;
+        healthManager.playerHealth -= 5;
 
         // If health is now less than zero, trigger a game over.
         if (healthManager.playerHealth <= 0)
@@ -166,5 +175,8 @@ public class GameManager : MonoBehaviour {
     }
 
 
-    
+    public void UpdateBillboards()
+    {
+        FindObjectOfType<BatchBillboard>().UpdateBillboards();
+    }
 }

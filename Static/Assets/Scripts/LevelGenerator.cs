@@ -5,25 +5,34 @@ public class LevelGenerator : MonoBehaviour {
 
     // LEVEL GEN VARIABLES
 	public float levelSize; // The size of the level (the level is always square so this is the width and height.)
-	float numberOfEnemies;
-    [SerializeField] int enemiesAddedPerLevel = 7;
-	float numberOfObstacles;
+    [SerializeField] float levelSizeIncrease;   // How much the size of each level increases.
+
+    int numberOfEnemies;
+    [SerializeField] int basicEnemiesAddedPerLevel = 7;
+    [SerializeField] int firstLevelWithTankEnemies = 2;
+    [SerializeField] int tankEnemiesAddedPerLevel = 1;
+
+    float numberOfObstacles;
     [SerializeField] int numberOfObstaclesMin = 10;  // The minimum number of obstacles that can appear in a level.
     [SerializeField] int numberOfObstaclesMax = 50;  // The maximum number of obstacles that can appear in a level.
     public float obstacleSizeMin;
 	public float obstacleSizeMax;
 
-    // MISC REFERENCES
-	[SerializeField] private GameObject enemyPrefab;
+    // PREFAB REFERENCES
+	[SerializeField] private GameObject basicEnemyPrefab;
+    [SerializeField] private GameObject tankEnemyPrefab;
 	[SerializeField] private GameObject obstaclePrefab;
 
+    GameManager gameManager;
 	Transform playerSpawnPoint;
     Transform player;
-    Transform floor;
+    [SerializeField] Transform floor;
+    [SerializeField] Transform[] walls;
 
 
 	private void Awake()
     {
+        gameManager = FindObjectOfType<GameManager>();
 		playerSpawnPoint = GameObject.Find ("Player Spawn Point").transform;
         player = GameObject.FindGameObjectWithTag("Player").transform;
         floor = GameObject.Find("Floor").transform;
@@ -32,8 +41,10 @@ public class LevelGenerator : MonoBehaviour {
 
 	public void Generate ()
 	{
-        numberOfEnemies = GameObject.Find("Game Manager").GetComponent<GameManager>().levelNumber * enemiesAddedPerLevel;
-        numberOfObstacles = Random.Range(numberOfObstaclesMin, numberOfObstaclesMax);
+        if (gameManager.levelNumber != 0) levelSize += levelSizeIncrease;
+        numberOfEnemies = 0; 
+
+        numberOfObstacles = Random.Range(numberOfObstaclesMin, numberOfObstaclesMax) + gameManager.levelNumber * 4;
 
         // Clear level of all current obstacles and enemies.
 		foreach (GameObject go in GameObject.FindGameObjectsWithTag("Enemy"))
@@ -50,31 +61,70 @@ public class LevelGenerator : MonoBehaviour {
         {
             Destroy(shot.gameObject);
         }
+
+        SetupWallsAndFloor();
 			
 		// Put all things in the level.
 		for (int i = 0; i < numberOfObstacles; i++) {
             PlaceObstacle();
 		}
 
-		for (int i = 0; i < numberOfEnemies; i++) {
-            PlaceEnemy();
+		for (int i = 0; i < gameManager.levelNumber * basicEnemiesAddedPerLevel; i++) {
+            PlaceEnemy(basicEnemyPrefab);
 		}
 
+        if (gameManager.levelNumber >= firstLevelWithTankEnemies)
+        {
+            for (int i = 0; i < (gameManager.levelNumber - firstLevelWithTankEnemies + 1) * tankEnemiesAddedPerLevel; i++)
+            {
+                PlaceEnemy(tankEnemyPrefab);
+            }
+        }
+
+        Debug.Log("Number of enemies: " + numberOfEnemies);
+        gameManager.currentEnemyAmt = numberOfEnemies;
+
         // Place the player in the correct spot above the level.
-		player.transform.position = new Vector3(player.transform.position.x, playerSpawnPoint.position.y, player.transform.position.z);
+        player.transform.position = new Vector3(player.transform.position.x, playerSpawnPoint.position.y, player.transform.position.z);
 
         // Re-enable the floor's collision (since it is disabled when the player completes a level.)
-		floor.GetComponent<MeshCollider> ().enabled = true;
+		floor.GetComponent<Collider> ().enabled = true;
 
         // Update billboards.
 		GameObject.Find ("Game Manager").GetComponent<BatchBillboard> ().UpdateBillboards ();
 	}
 
 
+    public void SetupWallsAndFloor()
+    {
+        // Give the correct size and position to the floor and walls.
+        floor.localScale = new Vector3(
+            levelSize * 0.2f,
+            1f,
+            levelSize * 0.2f
+            );
+
+        for (int i = 0; i < walls.Length; i++)
+        {
+            walls[i].localScale = new Vector3(
+                levelSize * 2f,
+                walls[i].localScale.y,
+                walls[i].localScale.z
+                );
+
+            if (walls[i].position.z > 0) walls[i].position = new Vector3(0f, walls[i].transform.position.y, levelSize);
+            else if (walls[i].position.z < 0) walls[i].position = new Vector3(0f, walls[i].transform.position.y, -levelSize);
+            else if (walls[i].position.x > 0) walls[i].position = new Vector3(levelSize, walls[i].transform.position.y, 0f);
+            else walls[i].position = new Vector3(-levelSize, walls[i].transform.position.y, 0f);
+        }
+    }
+
+
     void PlaceObstacle()
     {
         Vector3 newPosition = Vector3.zero;
         Vector3 newScale = Vector3.zero;
+        Quaternion newRotation = Quaternion.identity;
 
         bool placed = false;
         int loopSafeguard = 0;
@@ -95,15 +145,18 @@ public class LevelGenerator : MonoBehaviour {
                 Random.Range(-levelSize + newScale.z / 2, levelSize - newScale.z / 2)
             );
 
+            // Get a random rotation.
+            //newRotation = Quaternion.Euler(newRotation.x, Random.Range(-180f, 180f), newRotation.y);
+
             // Test this location with an overlap box that is high enough to catch the player in midair.
             // Also make it a little bit larger than the actual obstacle.
-            Collider[] overlaps = Physics.OverlapBox(newPosition, new Vector3(newScale.x * 0.6f, 400, newScale.z * 0.6f));
+            Collider[] overlaps = Physics.OverlapBox(newPosition, new Vector3(newScale.x * 1.6f, 400, newScale.z * 1.6f), newRotation);
 
             // Make sure this obstacle isn't going to be placed on top of the player or an enemy.
             placed = true;
             foreach (Collider collider in overlaps)
             {
-                if (collider.tag == "Player" || collider.tag == "Enemy")
+                if (collider.tag == "Player" || collider.tag == "Enemy" || collider.tag == "Obstacle" || collider.tag == "Wall")
                 {
                     placed = false;
                 }
@@ -117,12 +170,13 @@ public class LevelGenerator : MonoBehaviour {
         GameObject newObstacle = Instantiate(obstaclePrefab);
         newObstacle.transform.position = newPosition;
         newObstacle.transform.localScale = newScale;
+        newObstacle.transform.rotation = newRotation;
     }
 
 
-    void PlaceEnemy()
+    void PlaceEnemy(GameObject enemyToPlace)
     {
-        GameObject newEnemy = Instantiate(enemyPrefab);
+        GameObject newEnemy = Instantiate(enemyToPlace);
         Vector3 newPosition = Vector3.zero;
 
         bool placed = false;
@@ -158,5 +212,7 @@ public class LevelGenerator : MonoBehaviour {
         }
 
         newEnemy.transform.position = newPosition;
+
+        numberOfEnemies++;
     }
 }

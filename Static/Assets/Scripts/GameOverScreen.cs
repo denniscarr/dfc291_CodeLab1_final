@@ -25,7 +25,10 @@ public class GameOverScreen : MonoBehaviour
         player.GetComponent<FirstPersonController>().m_RunSpeed = 0;
 
         // Disable gun object.
-        GameObject.Find("Gun").SetActive(false);
+        foreach (Gun gun in FindObjectsOfType<Gun>())
+        {
+            gun.enabled = false;
+        }
 
         // Disable floor
         GameObject.Find("Floor").SetActive(false);

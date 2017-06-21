@@ -7,7 +7,11 @@ public class EnemyShot : MonoBehaviour {
     protected float maxLifetime = 30f;   // How long I live before I am deleted.
     protected float currentLifetime;  // Used to track how long I have currently been alive.
 
+    [SerializeField] bool collideWithFloor = false;
+
     [SerializeField] protected GameObject strikeParticles;    // The particles that spawn when I hit an enemy.
+
+    public GameObject firedEnemy;    // The enemy which fired this bullet.
 
     protected GameManager gameManager;
 
@@ -33,23 +37,34 @@ public class EnemyShot : MonoBehaviour {
     }
 
 
+    public virtual void Detonate()
+    {
+        // Destroy self.
+        Instantiate(strikeParticles, transform.position, Quaternion.identity);
+        Destroy(gameObject);
+    }
+
+
     void OnTriggerEnter(Collider collider)
     {
-        if (collider.tag == "Obstacle" || collider.tag == "Wall" || collider.name == "Floor")
+        if (collider.tag == "Obstacle" || collider.tag == "Wall" || (collider.name == "Floor" && collideWithFloor))
         {
-            // Destroy self.
-            Instantiate(strikeParticles, transform.position, Quaternion.identity);
-            Destroy(gameObject);
+            //Debug.Log("I bumped into an obstacle.");
+            Detonate();
+        }
+
+        else if (collider.tag == "Enemy" && collider.gameObject != firedEnemy)
+        {
+            collider.GetComponent<Enemy>().HP -= Random.Range(5, 15);
+            Detonate();
         }
 
         else if (collider.tag == "Player")
         {
-            gameManager.GetHurt();
+            gameManager.PlayerHurt();
 
             // Destroy self.
-            Instantiate(strikeParticles, transform.position, Quaternion.identity);
-            Destroy(gameObject);
+            Detonate();
         }
     }
-
 }

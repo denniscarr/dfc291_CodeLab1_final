@@ -6,7 +6,7 @@ public class BatchBillboard : MonoBehaviour {
 	private Transform[] billboardTransforms;    // References to the transforms of all sprites which should be billboarded.
 
 	private int indexStart = 0; // Where we should start when iterating through the array of billboards.
-	private int indexSkip = 5;  // How many billboard objects we should skip this frame.
+	private int indexSkip = 1;  // How many billboard objects we should skip this frame.
 
 
 	private void Start()
