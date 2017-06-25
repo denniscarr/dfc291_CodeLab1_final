@@ -98,13 +98,13 @@ public class Gun : MonoBehaviour
     void Update()
     {
         // Get new firing variables based on current oscillation.
-        int bulletsPerBurst = Mathf.RoundToInt(MyMath.Map(Mathf.Sin(Time.time * oscSpeed), -1f, 1f, bulletsPerBurstMax, bulletsPerBurstMin));
-        float burstsPerSecond = MyMath.Map(Mathf.Sin(Time.time * oscSpeed), -1f, 1f, burstsPerSecondMin, burstsPerSecondMax);
-        float inaccuracy = MyMath.Map(Mathf.Sin(Time.time * oscSpeed), -1f, 1f, inaccuracyMax, inaccuracyMin);
-        shootAudio.pitch = MyMath.Map(Mathf.Sin(Time.time * oscSpeed), -1f, 1f, 0.8f, 2f);
+        int bulletsPerBurst = Mathf.RoundToInt(MyMath.Map(gameManager.currentSine, -1f, 1f, bulletsPerBurstMax, bulletsPerBurstMin));
+        float burstsPerSecond = MyMath.Map(gameManager.currentSine, -1f, 1f, burstsPerSecondMin, burstsPerSecondMax);
+        float inaccuracy = MyMath.Map(gameManager.currentSine, -1f, 1f, inaccuracyMax, inaccuracyMin);
+        shootAudio.pitch = MyMath.Map(gameManager.currentSine, -1f, 1f, 0.8f, 2f);
 
         // Update gun animation state
-        animator.SetFloat("Gun State", Mathf.Sin(Time.time * oscSpeed));
+        animator.SetFloat("Gun State", gameManager.currentSine);
 
         // Run shot timer.
         timeSinceLastShot += Time.deltaTime;
@@ -133,13 +133,13 @@ public class Gun : MonoBehaviour
         _muzzleFlash.transform.position = gunTipTransform.position;
         _muzzleFlash.transform.rotation = gunTipTransform.rotation;
         _muzzleFlash.transform.localScale = new Vector3(
-            MyMath.Map(Mathf.Sin(Time.time * oscSpeed), -1f, 1f, 0.5f, 0.3f),
-            MyMath.Map(Mathf.Sin(Time.time * oscSpeed), -1f, 1f, 0.5f, 0.3f),
-            MyMath.Map(Mathf.Sin(Time.time * oscSpeed), -1f, 1f, 0.5f, 0.3f)
+            MyMath.Map(gameManager.currentSine, -1f, 1f, 0.5f, 0.3f),
+            MyMath.Map(gameManager.currentSine, -1f, 1f, 0.5f, 0.3f),
+            MyMath.Map(gameManager.currentSine, -1f, 1f, 0.5f, 0.3f)
             );
 
         // Get a new bullet color based on current sine
-        bulletColor = Color.Lerp(bulletColor1, bulletColor2, MyMath.Map(Mathf.Sin(Time.time * oscSpeed), -1f, 1f, 0f, 1f));
+        bulletColor = Color.Lerp(bulletColor1, bulletColor2, MyMath.Map(gameManager.currentSine, -1f, 1f, 0f, 1f));
 
         // Fire the specified number of bullets.
         for (int i = 0; i < numberOfBullets; i++)

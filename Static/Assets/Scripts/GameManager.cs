@@ -29,6 +29,8 @@ public class GameManager : MonoBehaviour {
     // USED FOR SINE TRACKER
     public float currentSine;
     public float oscSpeed = 0.3f;
+    [SerializeField] float bulletHitSineIncrease = 0.01f;
+    float sineTime = 0.0f;
 
     // MISC REFERENCES
     Transform floor;    // The floor of the game environment.
@@ -57,7 +59,8 @@ public class GameManager : MonoBehaviour {
         // Set up the current number of enemies.
         currentEnemyAmt = numberOfEnemies;
 
-        currentSine = Mathf.Sin(Time.time * oscSpeed);
+        //currentSine = Mathf.Sin(Time.time * oscSpeed);
+        currentSine = Mathf.Sin(sineTime);
 
         // Get references
         floor = GameObject.Find("Floor").transform;
@@ -71,7 +74,8 @@ public class GameManager : MonoBehaviour {
     private void Update()
     {
         // Update sine
-        currentSine = Mathf.Sin(Time.time * oscSpeed);
+        //currentSine = Mathf.Sin(sineTime * oscSpeed);
+        currentSine = Mathf.Sin(sineTime);
         //currentSine = MyMath.Map(player.transform.rotation.eulerAngles.y, 0f, 360f, -1f, 1);
 
         // Run idle timer.
@@ -160,6 +164,7 @@ public class GameManager : MonoBehaviour {
     public void BulletHit()
     {
         scoreManager.BulletHit();
+        sineTime += bulletHitSineIncrease;
     }
 
 
